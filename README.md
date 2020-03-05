@@ -1,0 +1,2 @@
+# mydate
+Golang date implementation
