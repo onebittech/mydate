@@ -1,4 +1,4 @@
-module mydate
+module github.com/onebittech/mydate
 
 go 1.13
 
