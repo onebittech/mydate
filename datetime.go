@@ -1,7 +1,8 @@
 package mydate
 
 import (
-	"strings"
+	"errors"
+	"regexp"
 	"time"
 )
 
@@ -9,6 +10,8 @@ import (
 type Datetime string
 
 const datetimeLayout = "2006-01-02 15:04:05.000000"
+
+var errInvalidDate = errors.New("invalid date format")
 
 // DatetimeFormatLayout for use in Time.Format
 var DatetimeFormatLayout = "02/01/2006 15:04:05"
@@ -33,11 +36,30 @@ func (d Datetime) Time() (time.Time, error) {
 		return t, nil
 	}
 
-	if !strings.Contains(date, ".") {
-		date += ".000000"
+	dateRegex := `\d\d\d\d-\d\d-\d\d`
+	timeRegex := dateRegex + " " + `\d\d:\d\d`
+	timestampRegex := timeRegex + `:\d\d`
+	timestampMilliRegex := timestampRegex + `.\d\d\d`
+	timestampMicroRegex := timestampMilliRegex + `\d\d\d`
+
+	var t time.Time
+	var err error
+
+	if re := regexp.MustCompile(timestampMicroRegex); re.MatchString(date) {
+		t, err = time.ParseInLocation(datetimeLayout, date, Location)
+	} else if re := regexp.MustCompile(timestampMilliRegex); re.MatchString(date) {
+		t, err = time.ParseInLocation(datetimeLayout, date+"000", Location)
+	} else if re := regexp.MustCompile(timestampRegex); re.MatchString(date) {
+		t, err = time.ParseInLocation(datetimeLayout, date+".000000", Location)
+	} else if re := regexp.MustCompile(timeRegex); re.MatchString(date) {
+		t, err = time.ParseInLocation(datetimeLayout, date+":00.000000", Location)
+	} else if re := regexp.MustCompile(dateRegex); re.MatchString(date) {
+		t, err = Date(date).Time()
+	} else {
+		err = errInvalidDate
 	}
 
-	return time.ParseInLocation(datetimeLayout, date, Location)
+	return t, err
 }
 
 // Format returns a textual representation of the time value formatted

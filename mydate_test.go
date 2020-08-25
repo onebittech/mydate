@@ -36,6 +36,21 @@ func TestDatetime(t *testing.T) {
 	dateStringOKTime, err := dateStringOK.Time()
 	assert.Nil(t, err, "Time date string should not give an error")
 	assert.True(t, dateStringOKTime.Equal(timeDate), "Time should be equal")
+
+	dateStringOK2 := Datetime("2020-01-01 00:00:00.000")
+	dateStringOK2Time, err := dateStringOK2.Time()
+	assert.Nil(t, err, "Time date string should not give an error")
+	assert.True(t, dateStringOK2Time.Equal(timeDate), "Time should be equal")
+
+	dateStringOK3 := Datetime("2020-01-01 00:00")
+	dateStringOK3Time, err := dateStringOK3.Time()
+	assert.Nil(t, err, "Time date string should not give an error")
+	assert.True(t, dateStringOK3Time.Equal(timeDate), "Time should be equal")
+
+	dateStringOK4 := Datetime("2020-01-01")
+	dateStringOK4Time, err := dateStringOK4.Time()
+	assert.Nil(t, err, "Time date string should not give an error")
+	assert.True(t, dateStringOK4Time.Equal(timeDate), "Time should be equal")
 }
 
 func TestDate(t *testing.T) {
